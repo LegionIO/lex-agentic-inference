@@ -23,6 +23,18 @@ RSpec.describe Legion::Extensions::Agentic::Inference::Momentum::Helpers::Moment
       engine.create_idea(content: 'overflow', idea_type: :belief, domain: :d)
       expect(engine.to_h[:total_ideas]).to eq(max)
     end
+
+    it 'rejects invalid idea_type' do
+      expect(engine.create_idea(content: 'bad', idea_type: :daydream, domain: :d)).to be_nil
+    end
+
+    it 'accepts all valid IDEA_TYPES' do
+      constants = Legion::Extensions::Agentic::Inference::Momentum::Helpers::Constants
+      constants::IDEA_TYPES.each do |itype|
+        result = engine.create_idea(content: "idea_#{itype}", idea_type: itype, domain: :d)
+        expect(result).not_to be_nil
+      end
+    end
   end
 
   describe '#reinforce_idea' do

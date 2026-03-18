@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-03-18
+
+### Changed
+- Enforce IDEA_TYPES validation in Momentum::MomentumEngine#create_idea (returns nil for invalid types)
+
 ## [0.1.0] - 2026-03-18
 
 ### Added

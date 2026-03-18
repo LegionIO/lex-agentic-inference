@@ -17,6 +17,8 @@ module Legion
               end
 
               def create_idea(content:, idea_type:, domain:, mass: DEFAULT_MASS)
+                return nil unless IDEA_TYPES.include?(idea_type)
+
                 evict_oldest if @ideas.size >= MAX_IDEAS
 
                 idea = Idea.new(content: content, idea_type: idea_type, domain: domain, mass: mass)
