@@ -44,7 +44,10 @@ Domain consolidation gem for reasoning, inference, and belief management. Bundle
 
 ## Actors
 
+- `Inference::Affordance::Actors::Scan` — interval actor, scans for available affordances
+- `Inference::Horizon::Actors::Adjust` — interval actor, adjusts reasoning horizon bounds
 - `Inference::Prediction::Actors::ExpirePredictions` — runs every 300s, expires stale predictions
+- `Inference::PredictiveCoding::Actors::Decay` — interval actor, decays precision weights
 
 ## Tick Integration
 
