@@ -17,48 +17,48 @@ module Legion
                   expected_value: expected_value || Helpers::Constants::DEFAULT_EXPECTATION,
                   tolerance:      tolerance
                 )
-                Legion::Logging.debug "[expectation_violation] create id=#{exp.id[0..7]} " \
-                                      "ctx=#{context} expected=#{exp.expected_value}"
+                log.debug "[expectation_violation] create id=#{exp.id[0..7]} " \
+                          "ctx=#{context} expected=#{exp.expected_value}"
                 { success: true, expectation: exp.to_h }
               end
 
               def evaluate_expectation(expectation_id:, actual_value:, **)
                 result = engine.evaluate_against(expectation_id: expectation_id, actual_value: actual_value)
-                Legion::Logging.debug "[expectation_violation] evaluate id=#{expectation_id[0..7]} " \
-                                      "violated=#{result[:violated]} type=#{result[:type]}"
+                log.debug "[expectation_violation] evaluate id=#{expectation_id[0..7]} " \
+                          "violated=#{result[:violated]} type=#{result[:type]}"
                 result
               end
 
               def adapt_expectation_value(expectation_id:, actual_value:, **)
                 result = engine.adapt_expectation(expectation_id: expectation_id, actual_value: actual_value)
-                Legion::Logging.debug "[expectation_violation] adapt id=#{expectation_id[0..7]} " \
-                                      "new=#{result[:new_expected]}"
+                log.debug "[expectation_violation] adapt id=#{expectation_id[0..7]} " \
+                          "new=#{result[:new_expected]}"
                 result
               end
 
               def recent_violations_report(limit: 10, **)
                 violations = engine.recent_violations(limit: limit)
-                Legion::Logging.debug "[expectation_violation] recent count=#{violations.size}"
+                log.debug "[expectation_violation] recent count=#{violations.size}"
                 { success: true, violations: violations, count: violations.size }
               end
 
               def violations_by_type_report(type:, **)
                 violations = engine.violations_by_type(type: type.to_sym)
-                Legion::Logging.debug '[expectation_violation] by_type ' \
-                                      "type=#{type} count=#{violations.size}"
+                log.debug '[expectation_violation] by_type ' \
+                          "type=#{type} count=#{violations.size}"
                 { success: true, violations: violations, count: violations.size }
               end
 
               def most_violated_expectations(limit: 5, **)
                 exps = engine.most_violated(limit: limit)
-                Legion::Logging.debug "[expectation_violation] most_violated count=#{exps.size}"
+                log.debug "[expectation_violation] most_violated count=#{exps.size}"
                 { success: true, expectations: exps.map(&:to_h), count: exps.size }
               end
 
               def expectation_violation_stats(**)
                 stats = engine.to_h
-                Legion::Logging.debug '[expectation_violation] stats ' \
-                                      "total=#{stats[:total_expectations]}"
+                log.debug '[expectation_violation] stats ' \
+                          "total=#{stats[:total_expectations]}"
                 { success: true }.merge(stats)
               end
 

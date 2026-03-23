@@ -33,62 +33,62 @@ module Legion
                   plausibility:           plausibility
                 )
 
-                Legion::Logging.debug "[counterfactual] imagined: type=#{scenario_type} " \
-                                      "domain=#{domain} id=#{scenario.id[0..7]}"
+                log.debug "[counterfactual] imagined: type=#{scenario_type} " \
+                          "domain=#{domain} id=#{scenario.id[0..7]}"
 
                 { success: true, scenario: scenario.to_h }
               end
 
               def generate_alternatives(actual_outcome:, domain:, **)
                 alternatives = engine.generate_alternatives(actual_outcome: actual_outcome, domain: domain)
-                Legion::Logging.debug "[counterfactual] generated #{alternatives.size} alternatives for domain=#{domain}"
+                log.debug "[counterfactual] generated #{alternatives.size} alternatives for domain=#{domain}"
                 { success: true, alternatives: alternatives.map(&:to_h), count: alternatives.size }
               end
 
               def resolve_counterfactual(scenario_id:, lesson:, **)
                 scenario = engine.resolve(scenario_id: scenario_id, lesson: lesson)
                 if scenario
-                  Legion::Logging.info "[counterfactual] resolved: id=#{scenario_id[0..7]} lesson=#{lesson[0..40]}"
+                  log.info "[counterfactual] resolved: id=#{scenario_id[0..7]} lesson=#{lesson[0..40]}"
                   { success: true, scenario: scenario.to_h }
                 else
-                  Legion::Logging.debug "[counterfactual] resolve failed: id=#{scenario_id[0..7]} not found"
+                  log.debug "[counterfactual] resolve failed: id=#{scenario_id[0..7]} not found"
                   { success: false, reason: :not_found }
                 end
               end
 
               def compute_regret(scenario_id:, **)
                 regret = engine.compute_regret(scenario_id: scenario_id)
-                Legion::Logging.debug "[counterfactual] regret: id=#{scenario_id[0..7]} value=#{regret.round(4)}"
+                log.debug "[counterfactual] regret: id=#{scenario_id[0..7]} value=#{regret.round(4)}"
                 { success: true, scenario_id: scenario_id, regret: regret }
               end
 
               def net_regret_level(**)
                 net = engine.net_regret
-                Legion::Logging.debug "[counterfactual] net_regret=#{net.round(4)}"
+                log.debug "[counterfactual] net_regret=#{net.round(4)}"
                 { success: true, net_regret: net }
               end
 
               def domain_regret(domain:, **)
                 regret = engine.domain_regret(domain: domain)
-                Legion::Logging.debug "[counterfactual] domain_regret: domain=#{domain} value=#{regret.round(4)}"
+                log.debug "[counterfactual] domain_regret: domain=#{domain} value=#{regret.round(4)}"
                 { success: true, domain: domain, regret: regret }
               end
 
               def lessons_learned(**)
                 lessons = engine.lessons_learned
-                Legion::Logging.debug "[counterfactual] lessons_learned: count=#{lessons.size}"
+                log.debug "[counterfactual] lessons_learned: count=#{lessons.size}"
                 { success: true, lessons: lessons.map(&:to_h), count: lessons.size }
               end
 
               def update_counterfactual(**)
                 engine.regret_decay
-                Legion::Logging.debug '[counterfactual] regret decay applied'
+                log.debug '[counterfactual] regret decay applied'
                 { success: true, action: :regret_decay }
               end
 
               def counterfactual_stats(**)
                 stats = engine.to_h
-                Legion::Logging.debug "[counterfactual] stats: total=#{stats[:total]} unresolved=#{stats[:unresolved]}"
+                log.debug "[counterfactual] stats: total=#{stats[:total]} unresolved=#{stats[:unresolved]}"
                 { success: true, stats: stats }
               end
 

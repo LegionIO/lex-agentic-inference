@@ -18,8 +18,8 @@ module Legion
                   domain:     domain,
                   loop_type:  type
                 )
-                Legion::Logging.debug "[enactive_cognition] created coupling id=#{loop.id[0..7]} " \
-                                      "action=#{action} domain=#{domain} type=#{type}"
+                log.debug "[enactive_cognition] created coupling id=#{loop.id[0..7]} " \
+                          "action=#{action} domain=#{domain} type=#{type}"
                 { success: true, coupling: loop.to_h }
               end
 
@@ -29,12 +29,12 @@ module Legion
                   actual_perception: actual_perception
                 )
                 unless result[:success]
-                  Legion::Logging.debug "[enactive_cognition] execute failed: #{coupling_id[0..7]} not found"
+                  log.debug "[enactive_cognition] execute failed: #{coupling_id[0..7]} not found"
                   return result
                 end
 
-                Legion::Logging.debug "[enactive_cognition] executed #{coupling_id[0..7]} " \
-                                      "match=#{result[:match]} label=#{result[:coupling_label]}"
+                log.debug "[enactive_cognition] executed #{coupling_id[0..7]} " \
+                          "match=#{result[:match]} label=#{result[:coupling_label]}"
                 result
               end
 
@@ -44,62 +44,62 @@ module Legion
                   new_perception: new_perception
                 )
                 unless result[:success]
-                  Legion::Logging.debug "[enactive_cognition] adapt failed: #{coupling_id[0..7]} not found"
+                  log.debug "[enactive_cognition] adapt failed: #{coupling_id[0..7]} not found"
                   return result
                 end
 
-                Legion::Logging.info "[enactive_cognition] adapted #{coupling_id[0..7]} new_perception=#{new_perception}"
+                log.info "[enactive_cognition] adapted #{coupling_id[0..7]} new_perception=#{new_perception}"
                 result
               end
 
               def find_action_for_perception(perception:, **)
                 loop = enaction_engine.find_action_for(perception: perception)
                 unless loop
-                  Legion::Logging.debug "[enactive_cognition] no coupled action found for perception=#{perception}"
+                  log.debug "[enactive_cognition] no coupled action found for perception=#{perception}"
                   return { found: false, perception: perception }
                 end
 
-                Legion::Logging.debug "[enactive_cognition] found action=#{loop.action} for perception=#{perception}"
+                log.debug "[enactive_cognition] found action=#{loop.action} for perception=#{perception}"
                 { found: true, action: loop.action, coupling: loop.to_h }
               end
 
               def coupled_sensorimotor_loops(**)
                 loops = enaction_engine.coupled_loops
-                Legion::Logging.debug "[enactive_cognition] coupled loops count=#{loops.size}"
+                log.debug "[enactive_cognition] coupled loops count=#{loops.size}"
                 { loops: loops.map(&:to_h), count: loops.size }
               end
 
               def domain_couplings(domain:, **)
                 loops = enaction_engine.by_domain(domain: domain)
-                Legion::Logging.debug "[enactive_cognition] domain=#{domain} loops=#{loops.size}"
+                log.debug "[enactive_cognition] domain=#{domain} loops=#{loops.size}"
                 { domain: domain, loops: loops.map(&:to_h), count: loops.size }
               end
 
               def strongest_couplings(limit: 5, **)
                 loops = enaction_engine.strongest_couplings(limit: limit)
-                Legion::Logging.debug "[enactive_cognition] strongest couplings limit=#{limit} found=#{loops.size}"
+                log.debug "[enactive_cognition] strongest couplings limit=#{limit} found=#{loops.size}"
                 { loops: loops.map(&:to_h), count: loops.size }
               end
 
               def overall_enactive_coupling(**)
                 strength = enaction_engine.overall_coupling
                 label    = coupling_label_for(strength)
-                Legion::Logging.debug "[enactive_cognition] overall_coupling=#{strength.round(3)} label=#{label}"
+                log.debug "[enactive_cognition] overall_coupling=#{strength.round(3)} label=#{label}"
                 { overall_coupling: strength, coupling_label: label }
               end
 
               def update_enactive_cognition(decay: false, prune: false, **)
                 enaction_engine.decay_all if decay
                 enaction_engine.prune_decoupled if prune
-                Legion::Logging.debug "[enactive_cognition] update decay=#{decay} prune=#{prune} " \
-                                      "remaining=#{enaction_engine.count}"
+                log.debug "[enactive_cognition] update decay=#{decay} prune=#{prune} " \
+                          "remaining=#{enaction_engine.count}"
                 { success: true, decay: decay, prune: prune, coupling_count: enaction_engine.count }
               end
 
               def enactive_cognition_stats(**)
                 stats = enaction_engine.to_h
-                Legion::Logging.debug "[enactive_cognition] stats couplings=#{stats[:coupling_count]} " \
-                                      "coupled=#{stats[:coupled_count]}"
+                log.debug "[enactive_cognition] stats couplings=#{stats[:coupling_count]} " \
+                          "coupled=#{stats[:coupled_count]}"
                 { success: true, stats: stats }
               end
 

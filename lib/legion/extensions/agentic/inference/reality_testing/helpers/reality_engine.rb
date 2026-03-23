@@ -7,6 +7,8 @@ module Legion
         module RealityTesting
           module Helpers
             class RealityEngine
+              include Legion::Logging::Helper
+
               def initialize
                 @beliefs     = {}
                 @next_id     = 1
@@ -19,7 +21,7 @@ module Legion
                 @next_id += 1
                 belief = Belief.new(id: id, claim: claim, domain: domain, confidence: confidence)
                 @beliefs[id] = belief
-                Legion::Logging.debug "[reality_testing] create_belief id=#{id} domain=#{domain} confidence=#{confidence.round(2)}"
+                log.debug "[reality_testing] create_belief id=#{id} domain=#{domain} confidence=#{confidence.round(2)}"
                 { created: true, belief: belief.to_h }
               end
 
@@ -28,7 +30,7 @@ module Legion
                 return { tested: false, reason: :not_found } unless belief
 
                 belief.test_with_evidence!(evidence_type: evidence_type, weight: weight)
-                Legion::Logging.debug "[reality_testing] test_belief id=#{belief_id} evidence=#{evidence_type} confidence=#{belief.confidence.round(2)}"
+                log.debug "[reality_testing] test_belief id=#{belief_id} evidence=#{evidence_type} confidence=#{belief.confidence.round(2)}"
                 { tested: true, belief: belief.to_h }
               end
 
@@ -68,7 +70,7 @@ module Legion
                 before = @beliefs.size
                 @beliefs.delete_if { |_id, b| b.confidence < 0.1 }
                 pruned = before - @beliefs.size
-                Legion::Logging.debug "[reality_testing] prune_rejected pruned=#{pruned} remaining=#{@beliefs.size}"
+                log.debug "[reality_testing] prune_rejected pruned=#{pruned} remaining=#{@beliefs.size}"
                 pruned
               end
 

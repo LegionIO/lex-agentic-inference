@@ -16,9 +16,9 @@ module Legion
                   domain:          domain,
                   certainty_level: certainty_level
                 )
-                Legion::Logging.debug "[uncertainty_tolerance] recorded decision: id=#{decision.id[0..7]} " \
-                                      "domain=#{domain} certainty=#{certainty_level.round(2)} " \
-                                      "type=#{decision.decision_type}"
+                log.debug "[uncertainty_tolerance] recorded decision: id=#{decision.id[0..7]} " \
+                          "domain=#{domain} certainty=#{certainty_level.round(2)} " \
+                          "type=#{decision.decision_type}"
                 {
                   decision_id:               decision.id,
                   domain:                    domain,
@@ -32,12 +32,12 @@ module Legion
               def resolve_uncertain_decision(decision_id:, outcome:, **)
                 decision = engine.resolve_decision(decision_id: decision_id, outcome: outcome)
                 unless decision
-                  Legion::Logging.debug "[uncertainty_tolerance] resolve failed: #{decision_id[0..7]} not found"
+                  log.debug "[uncertainty_tolerance] resolve failed: #{decision_id[0..7]} not found"
                   return { resolved: false, reason: :not_found }
                 end
 
-                Legion::Logging.info "[uncertainty_tolerance] resolved: id=#{decision_id[0..7]} " \
-                                     "outcome=#{outcome} tolerance=#{engine.current_tolerance.round(3)}"
+                log.info "[uncertainty_tolerance] resolved: id=#{decision_id[0..7]} " \
+                         "outcome=#{outcome} tolerance=#{engine.current_tolerance.round(3)}"
                 {
                   resolved:          true,
                   decision_id:       decision_id,
@@ -50,8 +50,8 @@ module Legion
               def should_act_assessment(certainty:, **)
                 act = engine.should_act?(certainty: certainty)
                 gap = (certainty - engine.current_tolerance).round(3)
-                Legion::Logging.debug "[uncertainty_tolerance] should_act? certainty=#{certainty.round(2)} " \
-                                      "tolerance=#{engine.current_tolerance.round(2)} act=#{act}"
+                log.debug "[uncertainty_tolerance] should_act? certainty=#{certainty.round(2)} " \
+                          "tolerance=#{engine.current_tolerance.round(2)} act=#{act}"
                 {
                   should_act:        act,
                   certainty:         certainty,
@@ -63,14 +63,14 @@ module Legion
 
               def uncertainty_profile(**)
                 profile = engine.to_h
-                Legion::Logging.debug "[uncertainty_tolerance] profile: tolerance=#{profile[:current_tolerance].round(3)} " \
-                                      "label=#{profile[:tolerance_label]} decisions=#{profile[:total_decisions]}"
+                log.debug "[uncertainty_tolerance] profile: tolerance=#{profile[:current_tolerance].round(3)} " \
+                          "label=#{profile[:tolerance_label]} decisions=#{profile[:total_decisions]}"
                 profile
               end
 
               def decisions_under_uncertainty_report(threshold: nil, **)
                 decisions = engine.decisions_under_uncertainty(threshold: threshold)
-                Legion::Logging.debug "[uncertainty_tolerance] under_uncertainty: count=#{decisions.size}"
+                log.debug "[uncertainty_tolerance] under_uncertainty: count=#{decisions.size}"
                 {
                   decisions: decisions.map(&:to_h),
                   count:     decisions.size,
@@ -80,7 +80,7 @@ module Legion
 
               def domain_tolerance_report(domain:, **)
                 avg = engine.domain_tolerance(domain: domain)
-                Legion::Logging.debug "[uncertainty_tolerance] domain_tolerance: domain=#{domain} avg=#{avg&.round(3)}"
+                log.debug "[uncertainty_tolerance] domain_tolerance: domain=#{domain} avg=#{avg&.round(3)}"
                 {
                   domain:            domain,
                   average_certainty: avg,
@@ -94,8 +94,8 @@ module Legion
                   Helpers::Constants::TOLERANCE_CEILING
                 )
                 engine.instance_variable_set(:@current_tolerance, clamped)
-                Legion::Logging.info "[uncertainty_tolerance] tolerance updated: #{clamped.round(3)} " \
-                                     "label=#{engine.tolerance_label}"
+                log.info "[uncertainty_tolerance] tolerance updated: #{clamped.round(3)} " \
+                         "label=#{engine.tolerance_label}"
                 {
                   updated:           true,
                   current_tolerance: clamped,

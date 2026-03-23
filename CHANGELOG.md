@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-03-22
+
+### Changed
+- Add 7 runtime dependencies to gemspec: legion-cache, legion-crypt, legion-data, legion-json, legion-logging, legion-settings, legion-transport
+- Replace direct Legion::Logging.* calls in all runner files with log.* via Legion::Logging::Helper
+- Add Legion::Logging::Helper include to RealityEngine, MagnetEngine, and PerceptualField helper classes
+- Add Legion::Extensions::Helpers::Lex include to AnalogicalReasoning runner module
+- Update spec_helper to use real sub-gem helpers (TIER 1 pattern)
+
 ## [0.1.1] - 2026-03-18
 
 ### Changed

@@ -34,12 +34,12 @@ module Legion
                 )
 
                 if result.is_a?(Hash) && result[:error]
-                  Legion::Logging.warn "[cognitive_magnet] create_pole failed: #{result[:error]}"
+                  log.warn "[cognitive_magnet] create_pole failed: #{result[:error]}"
                   return { success: false, **result }
                 end
 
-                Legion::Logging.debug "[cognitive_magnet] pole created id=#{result.id[0..7]} " \
-                                      "polarity=#{polarity} strength=#{strength}"
+                log.debug "[cognitive_magnet] pole created id=#{result.id[0..7]} " \
+                          "polarity=#{polarity} strength=#{strength}"
                 { success: true, pole: result.to_h }
               rescue ArgumentError => e
                 { success: false, error: :argument_error, message: e.message }
@@ -50,11 +50,11 @@ module Legion
                 result = eng.create_field(name: name)
 
                 if result.is_a?(Hash) && result[:error]
-                  Legion::Logging.warn "[cognitive_magnet] create_field failed: #{result[:error]}"
+                  log.warn "[cognitive_magnet] create_field failed: #{result[:error]}"
                   return { success: false, **result }
                 end
 
-                Legion::Logging.debug "[cognitive_magnet] field created id=#{result.id[0..7]} name=#{name}"
+                log.debug "[cognitive_magnet] field created id=#{result.id[0..7]} name=#{name}"
                 { success: true, field: result.to_h }
               rescue ArgumentError => e
                 { success: false, error: :argument_error, message: e.message }
@@ -65,11 +65,11 @@ module Legion
                 result = eng.magnetize(pole_id, rate: rate)
 
                 if result[:error]
-                  Legion::Logging.warn "[cognitive_magnet] magnetize failed: #{result[:error]}"
+                  log.warn "[cognitive_magnet] magnetize failed: #{result[:error]}"
                   return { success: false, **result }
                 end
 
-                Legion::Logging.debug "[cognitive_magnet] magnetized id=#{pole_id[0..7]} strength=#{result[:strength]}"
+                log.debug "[cognitive_magnet] magnetized id=#{pole_id[0..7]} strength=#{result[:strength]}"
                 { success: true, **result }
               rescue ArgumentError => e
                 { success: false, error: :argument_error, message: e.message }
@@ -80,12 +80,12 @@ module Legion
                 result = eng.interact(pole_a_id, pole_b_id)
 
                 if result[:error]
-                  Legion::Logging.warn "[cognitive_magnet] interact failed: #{result[:error]}"
+                  log.warn "[cognitive_magnet] interact failed: #{result[:error]}"
                   return { success: false, **result }
                 end
 
-                Legion::Logging.debug "[cognitive_magnet] interaction type=#{result[:type]} " \
-                                      "force=#{result[:force].round(4)}"
+                log.debug "[cognitive_magnet] interaction type=#{result[:type]} " \
+                          "force=#{result[:force].round(4)}"
                 { success: true, **result }
               rescue ArgumentError => e
                 { success: false, error: :argument_error, message: e.message }
@@ -94,7 +94,7 @@ module Legion
               def list_poles(engine: nil, limit: 50, **)
                 eng   = engine || magnet_engine
                 poles = eng.poles.values.first(limit).map(&:to_h)
-                Legion::Logging.debug "[cognitive_magnet] list_poles count=#{poles.size}"
+                log.debug "[cognitive_magnet] list_poles count=#{poles.size}"
                 { success: true, poles: poles, count: poles.size }
               rescue ArgumentError => e
                 { success: false, error: :argument_error, message: e.message }
@@ -103,8 +103,8 @@ module Legion
               def magnetic_status(engine: nil, **)
                 eng    = engine || magnet_engine
                 report = eng.field_report
-                Legion::Logging.debug "[cognitive_magnet] status: poles=#{report[:total_poles]} " \
-                                      "fields=#{report[:total_fields]} interactions=#{report[:total_interactions]}"
+                log.debug "[cognitive_magnet] status: poles=#{report[:total_poles]} " \
+                          "fields=#{report[:total_fields]} interactions=#{report[:total_interactions]}"
                 { success: true, report: report }
               rescue ArgumentError => e
                 { success: false, error: :argument_error, message: e.message }

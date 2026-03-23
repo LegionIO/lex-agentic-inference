@@ -14,7 +14,7 @@ module Legion
                 return { added: false, reason: :missing_domain } if domain.nil? || domain.to_s.strip.empty?
 
                 result = default_processor.add_model(domain: domain.to_sym)
-                Legion::Logging.debug "[predictive_processing] add_model domain=#{domain} added=#{result[:added]}"
+                log.debug "[predictive_processing] add_model domain=#{domain} added=#{result[:added]}"
                 result
               end
 
@@ -22,8 +22,8 @@ module Legion
                 return { predicted: false, reason: :missing_domain } if domain.nil?
 
                 prediction = default_processor.predict(domain: domain.to_sym, context: context)
-                Legion::Logging.debug "[predictive_processing] predict domain=#{domain} " \
-                                      "expected=#{prediction[:expected_value]&.round(3)}"
+                log.debug "[predictive_processing] predict domain=#{domain} " \
+                          "expected=#{prediction[:expected_value]&.round(3)}"
                 { predicted: true, domain: domain, prediction: prediction }
               end
 
@@ -43,7 +43,7 @@ module Legion
                 return { mode: nil, reason: :missing_domain } if domain.nil?
 
                 mode = default_processor.inference_mode(domain.to_sym)
-                Legion::Logging.debug "[predictive_processing] inference_mode domain=#{domain} mode=#{mode}"
+                log.debug "[predictive_processing] inference_mode domain=#{domain} mode=#{mode}"
                 { domain: domain, mode: mode }
               end
 
@@ -60,25 +60,25 @@ module Legion
 
               def models_needing_update(**)
                 needing = default_processor.models_needing_update
-                Legion::Logging.debug "[predictive_processing] models_needing_update count=#{needing.size}"
+                log.debug "[predictive_processing] models_needing_update count=#{needing.size}"
                 { count: needing.size, models: needing }
               end
 
               def active_inference_candidates(**)
                 candidates = default_processor.active_inference_candidates
-                Legion::Logging.debug "[predictive_processing] active_inference_candidates count=#{candidates.size}"
+                log.debug "[predictive_processing] active_inference_candidates count=#{candidates.size}"
                 { count: candidates.size, domains: candidates }
               end
 
               def update_predictive_processing(**)
                 default_processor.tick
-                Legion::Logging.debug '[predictive_processing] tick: precision decayed on all models'
+                log.debug '[predictive_processing] tick: precision decayed on all models'
                 { ticked: true, model_count: default_processor.models.size }
               end
 
               def predictive_processing_stats(**)
                 stats = default_processor.to_h
-                Legion::Logging.debug "[predictive_processing] stats global_fe=#{stats[:global_free_energy]&.round(3)}"
+                log.debug "[predictive_processing] stats global_fe=#{stats[:global_free_energy]&.round(3)}"
                 { success: true, stats: stats }
               end
 
@@ -91,9 +91,9 @@ module Legion
               def log_observe(domain, result)
                 return unless result[:observed]
 
-                Legion::Logging.debug "[predictive_processing] observe domain=#{domain} " \
-                                      "error=#{result[:prediction_error]&.round(3)} " \
-                                      "mode=#{result[:inference_mode]}"
+                log.debug "[predictive_processing] observe domain=#{domain} " \
+                          "error=#{result[:prediction_error]&.round(3)} " \
+                          "mode=#{result[:inference_mode]}"
               end
             end
           end

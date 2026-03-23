@@ -27,12 +27,12 @@ module Legion
                 )
 
                 if result.is_a?(Hash) && result[:error]
-                  Legion::Logging.warn "[cognitive_gravity] create_attractor failed: #{result[:error]}"
+                  log.warn "[cognitive_gravity] create_attractor failed: #{result[:error]}"
                   return { success: false, **result }
                 end
 
-                Legion::Logging.debug "[cognitive_gravity] attractor created id=#{result.id[0..7]} " \
-                                      "domain=#{domain} mass=#{mass}"
+                log.debug "[cognitive_gravity] attractor created id=#{result.id[0..7]} " \
+                          "domain=#{domain} mass=#{mass}"
                 { success: true, attractor: result.to_h }
               end
 
@@ -47,20 +47,20 @@ module Legion
                 )
 
                 if result.is_a?(Hash) && result[:error]
-                  Legion::Logging.warn "[cognitive_gravity] add_thought failed: #{result[:error]}"
+                  log.warn "[cognitive_gravity] add_thought failed: #{result[:error]}"
                   return { success: false, **result }
                 end
 
-                Legion::Logging.debug "[cognitive_gravity] thought added id=#{result.id[0..7]} " \
-                                      "attractor=#{attractor_id[0..7]} distance=#{orbital_distance}"
+                log.debug "[cognitive_gravity] thought added id=#{result.id[0..7]} " \
+                          "attractor=#{attractor_id[0..7]} distance=#{orbital_distance}"
                 { success: true, thought: result.to_h }
               end
 
               def tick_gravity(engine: nil, **)
                 eng = engine || gravity_engine
                 result = eng.simulate_tick
-                Legion::Logging.debug "[cognitive_gravity] tick: captures=#{result[:captures].size} " \
-                                      "escapes=#{result[:escapes].size}"
+                log.debug "[cognitive_gravity] tick: captures=#{result[:captures].size} " \
+                          "escapes=#{result[:escapes].size}"
                 { success: true, **result }
               end
 
@@ -69,11 +69,11 @@ module Legion
                 result = eng.accrete_attractor(attractor_id, amount: amount)
 
                 if result[:error]
-                  Legion::Logging.warn "[cognitive_gravity] accrete failed: #{result[:error]}"
+                  log.warn "[cognitive_gravity] accrete failed: #{result[:error]}"
                   return { success: false, **result }
                 end
 
-                Legion::Logging.debug "[cognitive_gravity] accreted id=#{attractor_id[0..7]} mass=#{result[:mass]}"
+                log.debug "[cognitive_gravity] accreted id=#{attractor_id[0..7]} mass=#{result[:mass]}"
                 { success: true, **result }
               end
 
@@ -82,19 +82,19 @@ module Legion
                 result = eng.erode_attractor(attractor_id, amount: amount)
 
                 if result[:error]
-                  Legion::Logging.warn "[cognitive_gravity] erode failed: #{result[:error]}"
+                  log.warn "[cognitive_gravity] erode failed: #{result[:error]}"
                   return { success: false, **result }
                 end
 
-                Legion::Logging.debug "[cognitive_gravity] eroded id=#{attractor_id[0..7]} " \
-                                      "mass=#{result[:mass]} collapsed=#{result[:collapsed]}"
+                log.debug "[cognitive_gravity] eroded id=#{attractor_id[0..7]} " \
+                          "mass=#{result[:mass]} collapsed=#{result[:collapsed]}"
                 { success: true, **result }
               end
 
               def strongest_attractors(limit: 5, engine: nil, **)
                 eng = engine || gravity_engine
                 attractors = eng.strongest_attractors(limit: limit)
-                Legion::Logging.debug "[cognitive_gravity] strongest_attractors count=#{attractors.size}"
+                log.debug "[cognitive_gravity] strongest_attractors count=#{attractors.size}"
                 { success: true, attractors: attractors.map(&:to_h), count: attractors.size }
               end
 
@@ -113,8 +113,8 @@ module Legion
               def gravity_report(engine: nil, **)
                 eng = engine || gravity_engine
                 report = eng.gravity_report
-                Legion::Logging.debug "[cognitive_gravity] report: attractors=#{report[:total_attractors]} " \
-                                      "orbiting=#{report[:total_orbiting]} supermassive=#{report[:supermassive_count]}"
+                log.debug "[cognitive_gravity] report: attractors=#{report[:total_attractors]} " \
+                          "orbiting=#{report[:total_orbiting]} supermassive=#{report[:supermassive_count]}"
                 { success: true, report: report }
               end
 

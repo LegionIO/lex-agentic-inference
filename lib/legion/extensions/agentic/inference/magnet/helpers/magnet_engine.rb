@@ -7,6 +7,8 @@ module Legion
         module Magnet
           module Helpers
             class MagnetEngine
+              include Legion::Logging::Helper
+
               attr_reader :poles, :fields, :interaction_log
 
               def initialize

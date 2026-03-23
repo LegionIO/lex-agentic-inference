@@ -29,8 +29,8 @@ module Legion
                 prediction_store.store(prediction)
 
                 actionable = prediction[:confidence] >= Helpers::Modes::PREDICTION_CONFIDENCE_MIN
-                Legion::Logging.debug "[prediction] new: mode=#{mode} confidence=#{prediction[:confidence].round(2)} " \
-                                      "actionable=#{actionable} id=#{prediction[:prediction_id][0..7]}"
+                log.debug "[prediction] new: mode=#{mode} confidence=#{prediction[:confidence].round(2)} " \
+                          "actionable=#{actionable} id=#{prediction[:prediction_id][0..7]}"
 
                 {
                   prediction_id: prediction[:prediction_id],
@@ -43,25 +43,25 @@ module Legion
               def resolve_prediction(prediction_id:, outcome:, actual: nil, **)
                 pred = prediction_store.resolve(prediction_id, outcome: outcome, actual: actual)
                 if pred
-                  Legion::Logging.info "[prediction] resolved #{prediction_id[0..7]} outcome=#{outcome}"
+                  log.info "[prediction] resolved #{prediction_id[0..7]} outcome=#{outcome}"
                   record_outcome_trace(pred, outcome)
                   { resolved: true, prediction_id: prediction_id, outcome: outcome }
                 else
-                  Legion::Logging.debug "[prediction] resolve failed: #{prediction_id[0..7]} not found"
+                  log.debug "[prediction] resolve failed: #{prediction_id[0..7]} not found"
                   { resolved: false, reason: :not_found }
                 end
               end
 
               def pending_predictions(**)
                 preds = prediction_store.pending
-                Legion::Logging.debug "[prediction] pending count=#{preds.size}"
+                log.debug "[prediction] pending count=#{preds.size}"
                 { predictions: preds, count: preds.size }
               end
 
               def prediction_accuracy(window: 100, **)
                 acc = prediction_store.accuracy(window: window)
                 total = prediction_store.outcomes.size
-                Legion::Logging.debug "[prediction] accuracy=#{acc.round(2)} total_outcomes=#{total}"
+                log.debug "[prediction] accuracy=#{acc.round(2)} total_outcomes=#{total}"
                 { accuracy: acc, total_outcomes: total }
               end
 
@@ -77,7 +77,7 @@ module Legion
                 end
 
                 remaining = prediction_store.pending.size
-                Legion::Logging.debug "[prediction] expire sweep: expired=#{expired_count} remaining=#{remaining}"
+                log.debug "[prediction] expire sweep: expired=#{expired_count} remaining=#{remaining}"
 
                 { expired_count: expired_count, remaining_pending: remaining }
               end
@@ -133,9 +133,9 @@ module Legion
                 store = runner.send(:default_store)
                 store.flush if store.respond_to?(:flush)
 
-                Legion::Logging.debug "[prediction] created #{trace_params[:type]} trace for #{outcome} prediction"
+                log.debug "[prediction] created #{trace_params[:type]} trace for #{outcome} prediction"
               rescue StandardError => e
-                Legion::Logging.warn "[prediction] failed to create outcome trace: #{e.message}"
+                log.warn "[prediction] failed to create outcome trace: #{e.message}"
               end
             end
           end

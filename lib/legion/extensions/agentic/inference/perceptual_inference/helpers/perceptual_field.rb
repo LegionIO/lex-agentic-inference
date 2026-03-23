@@ -7,6 +7,8 @@ module Legion
         module PerceptualInference
           module Helpers
             class PerceptualField
+              include Legion::Logging::Helper
+
               attr_reader :hypotheses, :evidence_log
 
               def initialize

@@ -16,10 +16,10 @@ module Legion
 
                 prop_id = engine.add_proposition(content: content, domain: domain, acceptance: acceptance)
                 if prop_id
-                  Legion::Logging.debug "[cognitive_coherence] add_proposition domain=#{domain} id=#{prop_id[0..7]}"
+                  log.debug "[cognitive_coherence] add_proposition domain=#{domain} id=#{prop_id[0..7]}"
                   { success: true, proposition_id: prop_id, domain: domain, acceptance: acceptance }
                 else
-                  Legion::Logging.warn '[cognitive_coherence] add_proposition failed: max propositions reached'
+                  log.warn '[cognitive_coherence] add_proposition failed: max propositions reached'
                   { success: false, reason: :max_propositions_reached }
                 end
               end
@@ -37,8 +37,8 @@ module Legion
                   positive:        positive
                 )
 
-                Legion::Logging.debug "[cognitive_coherence] add_constraint type=#{constraint_type} " \
-                                      "positive=#{positive} success=#{result[:success]}"
+                log.debug "[cognitive_coherence] add_constraint type=#{constraint_type} " \
+                          "positive=#{positive} success=#{result[:success]}"
                 result
               end
 
@@ -47,34 +47,34 @@ module Legion
                 prop  = engine.propositions[proposition_id]
 
                 unless prop
-                  Legion::Logging.debug "[cognitive_coherence] compute_coherence: #{proposition_id[0..7]} not found"
+                  log.debug "[cognitive_coherence] compute_coherence: #{proposition_id[0..7]} not found"
                   return { success: false, reason: :not_found }
                 end
 
-                Legion::Logging.debug '[cognitive_coherence] compute_coherence ' \
-                                      "id=#{proposition_id[0..7]} score=#{score.round(3)}"
+                log.debug '[cognitive_coherence] compute_coherence ' \
+                          "id=#{proposition_id[0..7]} score=#{score.round(3)}"
                 { success: true, proposition_id: proposition_id, coherence_score: score, state: prop.state }
               end
 
               def maximize_coherence(**)
                 result = engine.maximize_coherence
                 overall = result[:overall_coherence]&.round(3)
-                Legion::Logging.info '[cognitive_coherence] maximize_coherence ' \
-                                     "overall=#{overall} props=#{result[:proposition_count]}"
+                log.info '[cognitive_coherence] maximize_coherence ' \
+                         "overall=#{overall} props=#{result[:proposition_count]}"
                 result
               end
 
               def find_contradictions(**)
                 pairs = engine.find_contradictions
-                Legion::Logging.debug "[cognitive_coherence] find_contradictions count=#{pairs.size}"
+                log.debug "[cognitive_coherence] find_contradictions count=#{pairs.size}"
                 { success: true, contradictions: pairs, count: pairs.size }
               end
 
               def coherence_partition(**)
                 result = engine.partition
                 totals = result.transform_values(&:size)
-                Legion::Logging.debug "[cognitive_coherence] partition accepted=#{totals[:accepted]} " \
-                                      "rejected=#{totals[:rejected]} undecided=#{totals[:undecided]}"
+                log.debug "[cognitive_coherence] partition accepted=#{totals[:accepted]} " \
+                          "rejected=#{totals[:rejected]} undecided=#{totals[:undecided]}"
                 { success: true, partition: result, counts: totals }
               end
 
@@ -83,8 +83,8 @@ module Legion
                 decay_result     = engine.decay_all
 
                 overall = coherence_result[:overall_coherence]&.round(3)
-                Legion::Logging.info "[cognitive_coherence] update overall=#{overall} " \
-                                     "decayed=#{decay_result[:decayed_count]}"
+                log.info "[cognitive_coherence] update overall=#{overall} " \
+                         "decayed=#{decay_result[:decayed_count]}"
                 {
                   success:           true,
                   overall_coherence: coherence_result[:overall_coherence],
@@ -96,8 +96,8 @@ module Legion
               def cognitive_coherence_stats(**)
                 part   = engine.partition
                 counts = part.transform_values(&:size)
-                Legion::Logging.debug "[cognitive_coherence] stats propositions=#{engine.propositions.size} " \
-                                      "coherence=#{engine.overall_coherence.round(3)}"
+                log.debug "[cognitive_coherence] stats propositions=#{engine.propositions.size} " \
+                          "coherence=#{engine.overall_coherence.round(3)}"
                 {
                   success:             true,
                   proposition_count:   engine.propositions.size,

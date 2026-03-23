@@ -23,8 +23,8 @@ module Legion
                   controllability: controllability.to_sym,
                   confidence:      conf
                 )
-                Legion::Logging.info "[causal_attribution] create id=#{attr.id} event=#{event} " \
-                                     "outcome=#{outcome} locus=#{locus} emotion=#{attr.emotional_response}"
+                log.info "[causal_attribution] create id=#{attr.id} event=#{event} " \
+                         "outcome=#{outcome} locus=#{locus} emotion=#{attr.emotional_response}"
                 { success: true, attribution: attr.to_h }
               end
 
@@ -36,12 +36,12 @@ module Legion
                   controllability: controllability&.to_sym
                 )
                 if result.is_a?(Hash) && result[:found] == false
-                  Legion::Logging.warn "[causal_attribution] reattribute not_found id=#{attribution_id}"
+                  log.warn "[causal_attribution] reattribute not_found id=#{attribution_id}"
                   return { success: false, attribution_id: attribution_id, found: false }
                 end
 
-                Legion::Logging.debug "[causal_attribution] reattribute id=#{attribution_id} " \
-                                      "locus=#{result.locus} emotion=#{result.emotional_response}"
+                log.debug "[causal_attribution] reattribute id=#{attribution_id} " \
+                          "locus=#{result.locus} emotion=#{result.emotional_response}"
                 { success: true, attribution: result.to_h }
               end
 
@@ -51,49 +51,49 @@ module Legion
                   stability:       stability&.to_sym,
                   controllability: controllability&.to_sym
                 )
-                Legion::Logging.debug "[causal_attribution] by_pattern count=#{results.size}"
+                log.debug "[causal_attribution] by_pattern count=#{results.size}"
                 { success: true, attributions: results.map(&:to_h), count: results.size }
               end
 
               def domain_attributions(domain:, **)
                 results = engine.by_domain(domain: domain.to_sym)
-                Legion::Logging.debug "[causal_attribution] by_domain domain=#{domain} count=#{results.size}"
+                log.debug "[causal_attribution] by_domain domain=#{domain} count=#{results.size}"
                 { success: true, attributions: results.map(&:to_h), count: results.size }
               end
 
               def outcome_attributions(outcome:, **)
                 results = engine.by_outcome(outcome: outcome.to_sym)
-                Legion::Logging.debug "[causal_attribution] by_outcome outcome=#{outcome} count=#{results.size}"
+                log.debug "[causal_attribution] by_outcome outcome=#{outcome} count=#{results.size}"
                 { success: true, attributions: results.map(&:to_h), count: results.size }
               end
 
               def attribution_bias_assessment(**)
                 bias = engine.attribution_bias
-                Legion::Logging.debug "[causal_attribution] bias_assessment self_serving=#{bias[:self_serving_bias_detected]}"
+                log.debug "[causal_attribution] bias_assessment self_serving=#{bias[:self_serving_bias_detected]}"
                 { success: true, bias: bias }
               end
 
               def emotional_attribution_profile(**)
                 profile = engine.emotional_profile
-                Legion::Logging.debug "[causal_attribution] emotional_profile dominant=#{profile[:dominant]} total=#{profile[:total]}"
+                log.debug "[causal_attribution] emotional_profile dominant=#{profile[:dominant]} total=#{profile[:total]}"
                 { success: true, profile: profile }
               end
 
               def most_common_attribution(**)
                 result = engine.most_common_pattern
-                Legion::Logging.debug "[causal_attribution] most_common pattern=#{result[:pattern].inspect} count=#{result[:count]}"
+                log.debug "[causal_attribution] most_common pattern=#{result[:pattern].inspect} count=#{result[:count]}"
                 { success: true, pattern: result[:pattern], count: result[:count] }
               end
 
               def update_causal_attribution(**)
                 decayed = engine.decay_all
-                Legion::Logging.debug "[causal_attribution] decay cycle entries=#{decayed}"
+                log.debug "[causal_attribution] decay cycle entries=#{decayed}"
                 { success: true, decayed: decayed }
               end
 
               def causal_attribution_stats(**)
                 stats = engine.to_h
-                Legion::Logging.debug "[causal_attribution] stats total=#{stats[:total_attributions]}"
+                log.debug "[causal_attribution] stats total=#{stats[:total_attributions]}"
                 { success: true, stats: stats }
               end
 

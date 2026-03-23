@@ -14,15 +14,15 @@ module Legion
 
               def generate_prediction(domain:, context: {}, **)
                 prediction = generative_model.predict(domain: domain, context: context)
-                Legion::Logging.debug "[predictive_coding] generate_prediction domain=#{domain} " \
-                                      "predicted=#{prediction[:predicted]} confidence=#{prediction[:confidence].round(3)}"
+                log.debug "[predictive_coding] generate_prediction domain=#{domain} " \
+                          "predicted=#{prediction[:predicted]} confidence=#{prediction[:confidence].round(3)}"
                 { success: true, domain: domain, predicted: prediction[:predicted], confidence: prediction[:confidence] }
               end
 
               def report_outcome(domain:, predicted:, actual:, **)
                 error = generative_model.update(domain: domain, predicted: predicted, actual: actual)
-                Legion::Logging.debug "[predictive_coding] report_outcome domain=#{domain} " \
-                                      "error_magnitude=#{error.error_magnitude.round(3)} surprising=#{error.surprising?}"
+                log.debug "[predictive_coding] report_outcome domain=#{domain} " \
+                          "error_magnitude=#{error.error_magnitude.round(3)} surprising=#{error.surprising?}"
                 {
                   success:         true,
                   domain:          domain,
@@ -36,20 +36,20 @@ module Legion
 
               def precision_for(domain:, **)
                 value = generative_model.precision_for(domain: domain)
-                Legion::Logging.debug "[predictive_coding] precision_for domain=#{domain} precision=#{value.round(3)}"
+                log.debug "[predictive_coding] precision_for domain=#{domain} precision=#{value.round(3)}"
                 { success: true, domain: domain, precision: value }
               end
 
               def surprising_errors(**)
                 errors = generative_model.surprising_errors
-                Legion::Logging.debug "[predictive_coding] surprising_errors count=#{errors.size}"
+                log.debug "[predictive_coding] surprising_errors count=#{errors.size}"
                 { success: true, errors: errors.map(&:to_h), count: errors.size }
               end
 
               def free_energy_status(**)
                 fe    = generative_model.free_energy
                 level = generative_model.free_energy_level
-                Legion::Logging.debug "[predictive_coding] free_energy_status fe=#{fe.round(3)} level=#{level}"
+                log.debug "[predictive_coding] free_energy_status fe=#{fe.round(3)} level=#{level}"
                 {
                   success:     true,
                   free_energy: fe,
@@ -60,7 +60,7 @@ module Legion
 
               def active_inference_candidates(**)
                 candidates = generative_model.active_inference_candidates
-                Legion::Logging.debug "[predictive_coding] active_inference_candidates count=#{candidates.size}"
+                log.debug "[predictive_coding] active_inference_candidates count=#{candidates.size}"
                 { success: true, candidates: candidates, count: candidates.size }
               end
 
@@ -77,14 +77,14 @@ module Legion
 
                 prune_active_inferences
 
-                Legion::Logging.debug "[predictive_coding] register_active_inference domain=#{domain} id=#{inference_id[0..7]}"
+                log.debug "[predictive_coding] register_active_inference domain=#{domain} id=#{inference_id[0..7]}"
                 { success: true, inference_id: inference_id, domain: domain, status: :pending }
               end
 
               def resolve_active_inference(domain:, action:, actual_outcome:, inference_id: nil, **)
                 record = find_inference(domain, action, inference_id)
                 unless record
-                  Legion::Logging.debug "[predictive_coding] resolve_active_inference not found domain=#{domain}"
+                  log.debug "[predictive_coding] resolve_active_inference not found domain=#{domain}"
                   return { success: false, reason: :not_found }
                 end
 
@@ -100,8 +100,8 @@ module Legion
                 record[:resolved_at]      = Time.now.utc
                 record[:error_magnitude]  = error.error_magnitude
 
-                Legion::Logging.info "[predictive_coding] resolve_active_inference domain=#{domain} " \
-                                     "error=#{error.error_magnitude.round(3)} id=#{record[:inference_id][0..7]}"
+                log.info "[predictive_coding] resolve_active_inference domain=#{domain} " \
+                         "error=#{error.error_magnitude.round(3)} id=#{record[:inference_id][0..7]}"
 
                 {
                   success:         true,
@@ -115,7 +115,7 @@ module Legion
               def update_predictive_coding(**)
                 generative_model.decay_all
                 pruned = prune_resolved_inferences
-                Legion::Logging.debug "[predictive_coding] update_predictive_coding pruned_inferences=#{pruned}"
+                log.debug "[predictive_coding] update_predictive_coding pruned_inferences=#{pruned}"
                 { success: true, pruned_inferences: pruned }
               end
 

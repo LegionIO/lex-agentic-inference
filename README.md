@@ -5,7 +5,7 @@ Domain consolidation gem for reasoning, inference, and belief management. Bundle
 ## Overview
 
 **Gem**: `lex-agentic-inference`
-**Version**: 0.1.1
+**Version**: 0.1.0
 **Namespace**: `Legion::Extensions::Agentic::Inference`
 
 ## Sub-Modules
@@ -57,7 +57,7 @@ gem 'lex-agentic-inference'
 
 ```bash
 bundle install
-bundle exec rspec        # 2286 examples, 0 failures
+bundle exec rspec        # 2293 examples, 0 failures
 bundle exec rubocop      # 0 offenses
 ```
 
