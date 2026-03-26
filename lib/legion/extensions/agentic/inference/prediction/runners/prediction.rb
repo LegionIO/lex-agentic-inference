@@ -105,7 +105,7 @@ module Legion
               end
 
               def record_outcome_trace(prediction, outcome)
-                return unless defined?(Legion::Extensions::Memory::Runners::Traces)
+                return unless defined?(Legion::Extensions::Agentic::Memory::Trace::Runners::Traces)
 
                 trace_params = case outcome
                                when :correct
@@ -118,7 +118,7 @@ module Legion
                                  return
                                end
 
-                runner = Object.new.extend(Legion::Extensions::Memory::Runners::Traces)
+                runner = Object.new.extend(Legion::Extensions::Agentic::Memory::Trace::Runners::Traces)
                 runner.store_trace(
                   type:                trace_params[:type],
                   content_payload:     "prediction #{outcome}: mode=#{prediction[:mode]} confidence=#{prediction[:confidence]}",

@@ -1,6 +1,9 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.3] - 2026-03-26
+
+### Changed
+- Migrate prediction runner from `Legion::Extensions::Memory::Runners::Traces` to `Legion::Extensions::Agentic::Memory::Trace::Runners::Traces`
 
 ## [0.1.2] - 2026-03-22
 
