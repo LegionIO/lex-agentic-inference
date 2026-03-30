@@ -7,8 +7,8 @@ module Legion
         module ArgumentMapping
           module Runners
             module ArgumentMapping
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def create_argument(claim:, domain: :general, warrant: nil, qualifier: :presumably, **)
                 log.info "[argument_mapping] create_argument: claim=#{claim} domain=#{domain}"

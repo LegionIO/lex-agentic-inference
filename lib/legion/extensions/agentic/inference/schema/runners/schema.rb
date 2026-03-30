@@ -7,8 +7,8 @@ module Legion
         module Schema
           module Runners
             module Schema
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def update_schema(tick_results: {}, **)
                 extract_prediction_outcomes(tick_results)

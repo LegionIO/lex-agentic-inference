@@ -9,8 +9,8 @@ module Legion
         module Prediction
           module Runners
             module Prediction
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def predict(mode:, context: {}, confidence: nil, description: nil, **)
                 return { error: :invalid_mode, valid_modes: Helpers::Modes::REASONING_MODES } unless Helpers::Modes.valid_mode?(mode)

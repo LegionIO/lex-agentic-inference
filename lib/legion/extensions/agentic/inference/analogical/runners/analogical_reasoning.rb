@@ -7,8 +7,8 @@ module Legion
         module Analogical
           module Runners
             module AnalogicalReasoning
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def create_analogy(source_domain:, target_domain:, mappings:, mapping_type: :relational, strength: nil, **)
                 unless Helpers::Constants::MAPPING_TYPES.include?(mapping_type)

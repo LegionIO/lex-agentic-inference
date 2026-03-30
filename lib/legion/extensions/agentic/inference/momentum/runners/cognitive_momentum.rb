@@ -7,8 +7,8 @@ module Legion
         module Momentum
           module Runners
             module CognitiveMomentum
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def create_cognitive_idea(content:, idea_type:, domain:, mass: nil, **)
                 idea = engine.create_idea(
