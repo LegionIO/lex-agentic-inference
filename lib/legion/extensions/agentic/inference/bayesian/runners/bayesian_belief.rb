@@ -7,8 +7,8 @@ module Legion
         module Bayesian
           module Runners
             module BayesianBelief
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def add_bayesian_belief(content:, domain:, prior: nil, **)
                 pri = (prior || Helpers::Constants::DEFAULT_PRIOR).clamp(

@@ -7,8 +7,8 @@ module Legion
         module Debugging
           module Runners
             module CognitiveDebugging
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def detect_error(error_type:, description:, severity:, source_phase:, confidence_at_detection: 0.5, **)
                 unless Helpers::Constants::ERROR_TYPES.include?(error_type)

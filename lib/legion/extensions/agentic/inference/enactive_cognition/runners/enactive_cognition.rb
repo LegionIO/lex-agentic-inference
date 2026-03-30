@@ -7,8 +7,8 @@ module Legion
         module EnactiveCognition
           module Runners
             module EnactiveCognition
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def create_sensorimotor_coupling(action:, perception:, domain:, loop_type: :sensorimotor, **)
                 type = loop_type.is_a?(Symbol) ? loop_type : loop_type.to_sym

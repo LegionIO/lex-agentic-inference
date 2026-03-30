@@ -8,8 +8,8 @@ module Legion
           module Runners
             module Counterfactual
               include Helpers::Constants
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def imagine_counterfactual(actual_outcome:, counterfactual_outcome:, antecedent:,
                                          scenario_type:, mutation_type:, domain:, plausibility:, **)

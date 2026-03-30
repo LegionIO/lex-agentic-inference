@@ -7,8 +7,8 @@ module Legion
         module ExpectationViolation
           module Runners
             module ExpectationViolation
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def create_expectation(context:, domain:, expected_value: nil, tolerance: 0.2, **)
                 exp = engine.create_expectation(

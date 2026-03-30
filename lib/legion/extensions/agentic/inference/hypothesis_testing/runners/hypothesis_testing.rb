@@ -9,8 +9,8 @@ module Legion
         module HypothesisTesting
           module Runners
             module HypothesisTesting
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def propose_hypothesis(description:, domain: 'general', prior: Helpers::Constants::PRIOR_DEFAULT, **)
                 h = hypothesis_engine.propose(description: description, domain: domain, prior: prior)

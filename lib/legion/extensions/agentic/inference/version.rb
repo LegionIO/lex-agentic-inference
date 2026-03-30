@@ -4,7 +4,7 @@ module Legion
   module Extensions
     module Agentic
       module Inference
-        VERSION = '0.1.3'
+        VERSION = '0.1.5'
       end
     end
   end
