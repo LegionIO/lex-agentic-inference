@@ -7,8 +7,8 @@ module Legion
         module Affordance
           module Runners
             module Affordance
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def register_capability(name:, domain: :general, level: 1.0, **)
                 log.debug "[affordance] capability: #{name} domain=#{domain}"

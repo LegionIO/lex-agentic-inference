@@ -7,8 +7,8 @@ module Legion
         module Gravity
           module Runners
             module Gravity
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def create_attractor(content:, domain: :unknown, mass: Helpers::Constants::DEFAULT_MASS,
                                    pull_radius: 1.0, decay_rate: 0.01, engine: nil, **)

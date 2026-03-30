@@ -7,8 +7,8 @@ module Legion
         module PredictiveProcessing
           module Runners
             module PredictiveProcessing
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def add_generative_model(domain:, **)
                 return { added: false, reason: :missing_domain } if domain.nil? || domain.to_s.strip.empty?

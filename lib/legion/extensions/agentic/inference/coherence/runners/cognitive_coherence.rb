@@ -7,8 +7,8 @@ module Legion
         module Coherence
           module Runners
             module CognitiveCoherence
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def add_coherence_proposition(content:, domain: :general, acceptance: Helpers::Constants::DEFAULT_ACCEPTANCE,
                                             **)
