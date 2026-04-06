@@ -29,14 +29,18 @@ module Legion
                 prediction_store.store(prediction)
 
                 actionable = prediction[:confidence] >= Helpers::Modes::PREDICTION_CONFIDENCE_MIN
+                rolling_accuracy = prediction_store.accuracy
                 log.debug "[prediction] new: mode=#{mode} confidence=#{prediction[:confidence].round(2)} " \
-                          "actionable=#{actionable} id=#{prediction[:prediction_id][0..7]}"
+                          "actionable=#{actionable} accuracy=#{rolling_accuracy.round(2)} id=#{prediction[:prediction_id][0..7]}"
 
                 {
-                  prediction_id: prediction[:prediction_id],
-                  mode:          mode,
-                  confidence:    prediction[:confidence],
-                  actionable:    actionable
+                  prediction_id:    prediction[:prediction_id],
+                  mode:             mode,
+                  confidence:       prediction[:confidence],
+                  actionable:       actionable,
+                  rolling_accuracy: rolling_accuracy,
+                  error_rate:       (1.0 - rolling_accuracy).round(4),
+                  resolved:         prediction_store.recently_resolved
                 }
               end
 

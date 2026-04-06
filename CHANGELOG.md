@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- add rolling_accuracy, error_rate, and resolved keys to predict return hash
+- wire schema outcome-learning loop by providing resolved predictions array
+
 ## [0.1.5] - 2026-03-30
 
 ### Changed

@@ -57,6 +57,27 @@ module Legion
               def count
                 @predictions.size
               end
+
+              def resolved_count
+                @predictions.values.count { |p| p[:status] != :pending }
+              end
+
+              def recently_resolved(limit: 20)
+                @outcomes.last(limit).filter_map do |entry|
+                  pred = @predictions[entry[:prediction_id]]
+                  next unless pred
+
+                  {
+                    prediction_id:  entry[:prediction_id],
+                    domain:         pred[:mode],
+                    outcome_domain: pred.dig(:context, :outcome_domain) || pred[:mode],
+                    outcome:        entry[:outcome],
+                    accurate:       entry[:outcome] == :correct,
+                    confidence:     pred[:confidence],
+                    resolved_at:    entry[:at]
+                  }
+                end
+              end
             end
           end
         end
