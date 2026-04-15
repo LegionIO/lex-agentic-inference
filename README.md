@@ -5,7 +5,7 @@ Domain consolidation gem for reasoning, inference, and belief management. Bundle
 ## Overview
 
 **Gem**: `lex-agentic-inference`
-**Version**: 0.1.0
+**Version**: 0.1.7
 **Namespace**: `Legion::Extensions::Agentic::Inference`
 
 ## Sub-Modules
