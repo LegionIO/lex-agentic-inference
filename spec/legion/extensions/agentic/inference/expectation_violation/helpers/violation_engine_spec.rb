@@ -118,4 +118,21 @@ RSpec.describe Legion::Extensions::Agentic::Inference::ExpectationViolation::Hel
                                :violation_rate, :positive_ratio, :history_count)
     end
   end
+
+  describe '#prune_stale_violations' do
+    it 'removes violations older than the cutoff' do
+      engine.evaluate_against(expectation_id: exp.id, actual_value: 0.9)
+      expect(engine.recent_violations.size).to eq(1)
+      pruned = engine.prune_stale_violations(cutoff: Time.now.utc + 1)
+      expect(pruned).to eq(1)
+      expect(engine.recent_violations.size).to eq(0)
+    end
+
+    it 'keeps violations newer than the cutoff' do
+      engine.evaluate_against(expectation_id: exp.id, actual_value: 0.9)
+      pruned = engine.prune_stale_violations(cutoff: Time.now.utc - 3600)
+      expect(pruned).to eq(0)
+      expect(engine.recent_violations.size).to eq(1)
+    end
+  end
 end

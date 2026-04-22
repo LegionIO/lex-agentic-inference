@@ -55,6 +55,16 @@ module Legion
                 { success: true, expectations: exps.map(&:to_h), count: exps.size }
               end
 
+              def decay_violations(threshold_seconds: 3600, **)
+                cutoff = Time.now.utc - threshold_seconds
+                pruned = engine.prune_stale_violations(cutoff: cutoff)
+                log.debug "[expectation_violation] decay_violations pruned=#{pruned} threshold=#{threshold_seconds}s"
+                { success: true, pruned: pruned }
+              rescue StandardError => e
+                log.error "[expectation_violation] decay_violations error=#{e.message}"
+                { success: false, error: e.message }
+              end
+
               def expectation_violation_stats(**)
                 stats = engine.to_h
                 log.debug '[expectation_violation] stats ' \

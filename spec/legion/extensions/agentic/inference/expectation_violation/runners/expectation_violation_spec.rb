@@ -56,4 +56,17 @@ RSpec.describe Legion::Extensions::Agentic::Inference::ExpectationViolation::Run
       expect(result).to include(:total_expectations, :total_violations)
     end
   end
+
+  describe '#decay_violations' do
+    it 'prunes stale violations with default threshold' do
+      result = client.decay_violations
+      expect(result[:success]).to be true
+      expect(result[:pruned]).to be_a(Integer)
+    end
+
+    it 'accepts a custom threshold_seconds' do
+      result = client.decay_violations(threshold_seconds: 0)
+      expect(result[:success]).to be true
+    end
+  end
 end
