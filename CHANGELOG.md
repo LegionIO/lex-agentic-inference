@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.8] - 2026-04-22
+### Added
+- 7 new maintenance actors: FreeEnergy::Update (30s), BeliefRevision::Update (120s), RealityTesting::DecayBeliefs (300s), CognitiveCoherence::Update (120s), ExpectationViolation::DecayViolations (300s), AbductiveReasoning::Update (60s), CognitiveMomentum::Update (60s)
+- `ExpectationViolation#decay_violations` method with configurable stale threshold
+
 ## [0.1.7] - 2026-04-15
 ### Changed
 - Set `mcp_tools?`, `mcp_tools_deferred?`, and `transport_required?` to `false` — internal cognitive pipeline extension

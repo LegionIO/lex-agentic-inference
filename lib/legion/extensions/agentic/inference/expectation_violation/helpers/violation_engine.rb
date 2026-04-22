@@ -77,6 +77,12 @@ module Legion
                 @expectations.values.sort_by { |exp| -exp.violation_count }.first(limit)
               end
 
+              def prune_stale_violations(cutoff:)
+                before = @violations.size
+                @violations.reject! { |vio| vio[:at] < cutoff }
+                before - @violations.size
+              end
+
               def violation_rate
                 total = @expectations.values.sum(&:violation_count)
                 evals = @history.count { |entry| entry[:event] == :evaluated }
