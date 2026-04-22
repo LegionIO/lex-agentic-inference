@@ -1,13 +1,13 @@
 # lex-agentic-inference
 
-**Parent**: `/Users/miverso2/rubymine/legion/extensions-agentic/CLAUDE.md`
+**Parent**: `../CLAUDE.md`
 
 ## What Is This Gem?
 
 Domain consolidation gem for reasoning, inference, and belief management. Bundles 27 source extensions into one loadable unit under `Legion::Extensions::Agentic::Inference`.
 
 **Gem**: `lex-agentic-inference`
-**Version**: 0.1.0
+**Version**: 0.1.8
 **Namespace**: `Legion::Extensions::Agentic::Inference`
 
 ## Sub-Modules
@@ -44,14 +44,34 @@ Domain consolidation gem for reasoning, inference, and belief management. Bundle
 
 ## Actors
 
-- `Inference::Affordance::Actors::Scan` — interval actor, scans for available affordances
-- `Inference::Horizon::Actors::Adjust` — interval actor, adjusts reasoning horizon bounds
-- `Inference::Prediction::Actors::ExpirePredictions` — runs every 300s, expires stale predictions
-- `Inference::PredictiveCoding::Actors::Decay` — interval actor, decays precision weights
+| Actor | Interval | Target Method |
+|-------|----------|---------------|
+| `Abductive::Actor::UpdateAbductiveReasoning` | Every 60s | `update_abductive_reasoning` on `Abductive::Runners::AbductiveReasoning` |
+| `Affordance::Actors::Scan` | interval | `scan_affordances` on `Affordance::Runners::Affordance` |
+| `BeliefRevision::Actor::UpdateBeliefRevision` | Every 120s | `update_belief_revision` on `BeliefRevision::Runners::BeliefRevision` |
+| `Coherence::Actor::UpdateCognitiveCoherence` | Every 120s | `update_cognitive_coherence` on `Coherence::Runners::CognitiveCoherence` |
+| `ExpectationViolation::Actor::DecayViolations` | Every 300s | `decay_violations` on `ExpectationViolation::Runners::ExpectationViolation` |
+| `FreeEnergy::Actor::UpdateFreeEnergy` | Every 30s | `update_free_energy` on `FreeEnergy::Runners::FreeEnergy` |
+| `Horizon::Actors::Adjust` | interval | `adjust_horizon` on `Horizon::Runners::CognitiveHorizon` |
+| `Momentum::Actor::UpdateCognitiveMomentum` | Every 60s | `update_cognitive_momentum` on `Momentum::Runners::CognitiveMomentum` |
+| `Prediction::Actors::ExpirePredictions` | Every 300s | `expire_predictions` on `Prediction::Runners::Prediction` |
+| `PredictiveCoding::Actors::Decay` | interval | decays precision weights |
+| `RealityTesting::Actor::DecayBeliefs` | Every 300s | `decay_beliefs` on `RealityTesting::Runners::RealityTesting` |
 
 ## Tick Integration
 
-`Inference::Prediction` maps to the `prediction_engine` tick phase.
+`Inference::Prediction` maps to the `prediction_engine` tick phase. Returns `{ accuracy:, confidence:, ... }` which is read by `Core::Runners::Homeostasis#regulate` and `Motivation::Runners::Motivation#update_motivation`.
+
+## Dependencies
+
+**Runtime** (from gemspec):
+- `legion-cache` >= 1.3.11
+- `legion-crypt` >= 1.4.9
+- `legion-data` >= 1.4.17
+- `legion-json` >= 1.2.1
+- `legion-logging` >= 1.3.2
+- `legion-settings` >= 1.3.14
+- `legion-transport` >= 1.3.9
 
 ## Development
 

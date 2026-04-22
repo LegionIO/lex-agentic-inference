@@ -5,7 +5,7 @@ Domain consolidation gem for reasoning, inference, and belief management. Bundle
 ## Overview
 
 **Gem**: `lex-agentic-inference`
-**Version**: 0.1.7
+**Version**: 0.1.8
 **Namespace**: `Legion::Extensions::Agentic::Inference`
 
 ## Sub-Modules
@@ -42,10 +42,19 @@ Domain consolidation gem for reasoning, inference, and belief management. Bundle
 
 ## Actors
 
-- `Inference::Affordance::Actors::Scan` — interval actor, scans for available affordances
-- `Inference::Horizon::Actors::Adjust` — interval actor, adjusts reasoning horizon bounds
-- `Inference::Prediction::Actors::ExpirePredictions` — runs every 300s, expires stale predictions
-- `Inference::PredictiveCoding::Actors::Decay` — interval actor, decays precision weights
+| Actor | Interval | What It Does |
+|-------|----------|--------------|
+| `Abductive::Actor::UpdateAbductiveReasoning` | Every 60s | Prunes low-probability hypotheses |
+| `Affordance::Actors::Scan` | interval | Scans for available affordances in current context |
+| `BeliefRevision::Actor::UpdateBeliefRevision` | Every 120s | AGM contraction on low-confidence beliefs |
+| `Coherence::Actor::UpdateCognitiveCoherence` | Every 120s | Recomputes coherence scores across belief graph |
+| `ExpectationViolation::Actor::DecayViolations` | Every 300s | Decays stale expectation violation records |
+| `FreeEnergy::Actor::UpdateFreeEnergy` | Every 30s | Minimizes free energy — updates variational estimates |
+| `Horizon::Actors::Adjust` | interval | Adjusts reasoning horizon bounds |
+| `Momentum::Actor::UpdateCognitiveMomentum` | Every 60s | Decays inference momentum, updates continuation bias |
+| `Prediction::Actors::ExpirePredictions` | Every 300s | Expires stale predictions |
+| `PredictiveCoding::Actors::Decay` | interval | Decays precision weights in predictive coding hierarchy |
+| `RealityTesting::Actor::DecayBeliefs` | Every 300s | Decays beliefs that are no longer supported by evidence |
 
 ## Installation
 
