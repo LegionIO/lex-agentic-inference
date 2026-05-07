@@ -100,7 +100,7 @@ module Legion
                 decayed = 0
                 @hypotheses.each_value do |hyp|
                   next if hyp.state == :refuted
-                  next if hyp.last_evaluated_at >= cutoff
+                  next if hyp.last_evaluated_at && hyp.last_evaluated_at >= cutoff
 
                   hyp.plausibility = (hyp.plausibility - Constants::DECAY_RATE).clamp(
                     Constants::PLAUSIBILITY_FLOOR,

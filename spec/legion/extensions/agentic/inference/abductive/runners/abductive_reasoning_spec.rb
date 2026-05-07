@@ -298,6 +298,25 @@ RSpec.describe Legion::Extensions::Agentic::Inference::Abductive::Runners::Abduc
       result = client.update_abductive_reasoning
       expect(result[:pruned]).to eq(1)
     end
+
+    it 'decays hypotheses that were restored without last_evaluated_at' do
+      obs_id = client.record_observation(content: 'obs', domain: :test)[:observation][:id]
+      hyp_id = client.generate_hypothesis(
+        content:           'old restored hyp',
+        observation_ids:   [obs_id],
+        domain:            :test,
+        simplicity:        0.5,
+        explanatory_power: 0.5
+      )[:hypothesis][:id]
+      engine = client.instance_variable_get(:@engine)
+      hypothesis = engine.find_by_domain(domain: :test).find { |hyp| hyp.id == hyp_id }
+      hypothesis.instance_variable_set(:@last_evaluated_at, nil)
+
+      result = client.update_abductive_reasoning
+
+      expect(result[:success]).to be true
+      expect(result[:decayed]).to eq(1)
+    end
   end
 
   describe '#abductive_reasoning_stats' do
