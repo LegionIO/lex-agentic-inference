@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.9] - 2026-05-07
+### Fixed
+- Abductive reasoning decay now handles restored hypotheses with no `last_evaluated_at` timestamp instead of crashing the update cycle.
+
 ## [0.1.8] - 2026-04-22
 ### Added
 - 7 new maintenance actors: FreeEnergy::Update (30s), BeliefRevision::Update (120s), RealityTesting::DecayBeliefs (300s), CognitiveCoherence::Update (120s), ExpectationViolation::DecayViolations (300s), AbductiveReasoning::Update (60s), CognitiveMomentum::Update (60s)
