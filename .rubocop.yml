@@ -8,3 +8,6 @@ Legion/Extension/EveryActorRequiresTime:
 # Private helper methods in runners return nil/numeric guards, not Hash
 Legion/Extension/RunnerReturnHash:
   Enabled: false
+
+Legion/Llm/TaxonomyEnum:
+  Enabled: false
