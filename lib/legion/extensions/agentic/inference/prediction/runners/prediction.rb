@@ -12,9 +12,10 @@ module Legion
               include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
                                                           Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
-              def predict(mode:, context: {}, confidence: nil, description: nil, **)
+              def predict(mode:, context: {}, confidence: nil, description: nil, identity: nil, **)
                 return { error: :invalid_mode, valid_modes: Helpers::Modes::REASONING_MODES } unless Helpers::Modes.valid_mode?(mode)
 
+                store = prediction_store(identity: identity)
                 prediction = {
                   prediction_id: SecureRandom.uuid,
                   mode:          mode,
@@ -26,10 +27,10 @@ module Legion
                   horizon:       Helpers::Modes::PREDICTION_HORIZON
                 }
 
-                prediction_store.store(prediction)
+                store.store(prediction)
 
                 actionable = prediction[:confidence] >= Helpers::Modes::PREDICTION_CONFIDENCE_MIN
-                rolling_accuracy = prediction_store.accuracy
+                rolling_accuracy = store.accuracy
                 log.debug "[prediction] new: mode=#{mode} confidence=#{prediction[:confidence].round(2)} " \
                           "actionable=#{actionable} accuracy=#{rolling_accuracy.round(2)} id=#{prediction[:prediction_id][0..7]}"
 
@@ -40,12 +41,13 @@ module Legion
                   actionable:       actionable,
                   rolling_accuracy: rolling_accuracy,
                   error_rate:       (1.0 - rolling_accuracy).round(4),
-                  resolved:         prediction_store.recently_resolved
+                  resolved:         store.recently_resolved
                 }
               end
 
-              def resolve_prediction(prediction_id:, outcome:, actual: nil, **)
-                pred = prediction_store.resolve(prediction_id, outcome: outcome, actual: actual)
+              def resolve_prediction(prediction_id:, outcome:, actual: nil, identity: nil, **)
+                store = prediction_store(identity: identity)
+                pred = store.resolve(prediction_id, outcome: outcome, actual: actual)
                 if pred
                   log.info "[prediction] resolved #{prediction_id[0..7]} outcome=#{outcome}"
                   record_outcome_trace(pred, outcome)
@@ -56,46 +58,53 @@ module Legion
                 end
               end
 
-              def pending_predictions(**)
-                preds = prediction_store.pending
+              def pending_predictions(identity: nil, **)
+                store = prediction_store(identity: identity)
+                preds = store.pending
                 log.debug "[prediction] pending count=#{preds.size}"
                 { predictions: preds, count: preds.size }
               end
 
-              def prediction_accuracy(window: 100, **)
-                acc = prediction_store.accuracy(window: window)
-                total = prediction_store.outcomes.size
+              def prediction_accuracy(window: 100, identity: nil, **)
+                store = prediction_store(identity: identity)
+                acc = store.accuracy(window: window)
+                total = store.outcomes.size
                 log.debug "[prediction] accuracy=#{acc.round(2)} total_outcomes=#{total}"
                 { accuracy: acc, total_outcomes: total }
               end
 
-              def expire_stale_predictions(**)
+              def expire_stale_predictions(identity: nil, **)
+                store = prediction_store(identity: identity)
                 expired_count = 0
 
-                prediction_store.pending.each do |pred|
+                store.pending.each do |pred|
                   age = Time.now.utc - pred[:created_at]
                   next unless age > pred[:horizon]
 
-                  prediction_store.resolve(pred[:prediction_id], outcome: :expired, actual: nil)
+                  store.resolve(pred[:prediction_id], outcome: :expired, actual: nil)
                   expired_count += 1
                 end
 
-                remaining = prediction_store.pending.size
+                remaining = store.pending.size
                 log.debug "[prediction] expire sweep: expired=#{expired_count} remaining=#{remaining}"
 
                 { expired_count: expired_count, remaining_pending: remaining }
               end
 
-              def get_prediction(prediction_id:, **)
-                pred = prediction_store.get(prediction_id)
+              def get_prediction(prediction_id:, identity: nil, **)
+                store = prediction_store(identity: identity)
+                pred = store.get(prediction_id)
                 pred ? { found: true, prediction: pred } : { found: false }
               end
 
-              private
-
-              def prediction_store
-                @prediction_store ||= Helpers::PredictionStore.new
+              def erase_partner!(identity:, **)
+                store = prediction_store(identity: identity)
+                result = store.erase_partner!(identity: identity)
+                log.info "[prediction] erased partner identity=#{identity}"
+                result
               end
+
+              private
 
               def estimate_confidence(mode, context)
                 base = case mode

@@ -9,9 +9,10 @@ module Legion
         module Prediction
           module Helpers
             class PredictionStore
-              attr_reader :predictions, :outcomes
+              attr_reader :predictions, :outcomes, :identity
 
-              def initialize
+              def initialize(identity: nil)
+                @identity = identity
                 @predictions = {}
                 @outcomes = []
               end
@@ -77,6 +78,16 @@ module Legion
                     resolved_at:    entry[:at]
                   }
                 end
+              end
+
+              def erase_partner!(identity:)
+                raise ArgumentError, "identity mismatch: expected #{@identity.inspect}, got #{identity.inspect}" if @identity != identity
+
+                predictions_erased = @predictions.size
+                outcomes_erased = @outcomes.size
+                @predictions.clear
+                @outcomes.clear
+                { erased: true, identity: identity, predictions_erased: predictions_erased, outcomes_erased: outcomes_erased }
               end
             end
           end
