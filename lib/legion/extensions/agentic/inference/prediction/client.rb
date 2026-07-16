@@ -13,12 +13,14 @@ module Legion
             include Runners::Prediction
 
             def initialize(**)
-              @prediction_store = Helpers::PredictionStore.new
+              @prediction_stores = {}
             end
 
             private
 
-            attr_reader :prediction_store
+            def prediction_store(identity: nil)
+              @prediction_stores[identity] ||= Helpers::PredictionStore.new(identity: identity)
+            end
           end
         end
       end
