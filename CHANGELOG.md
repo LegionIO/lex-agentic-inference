@@ -1,11 +1,15 @@
 # Changelog
 
-## [0.1.9] - 2026-07-16
+## [0.1.10] - 2026-07-16
 ### Added
 - Per-identity prediction store and rolling accuracy: `PredictionStore` is now keyed by `identity:`, isolating each partner's predictions and outcomes
 - `PredictionStore#erase_partner!(identity:)` — removes all predictions and outcomes for the given identity, raising `ArgumentError` on mismatch
 - `Runners::Prediction#erase_partner!(identity:)` — delegates to the per-identity store, enabling selective data erasure
 - All runner methods (`predict`, `resolve_prediction`, `pending_predictions`, `prediction_accuracy`, `expire_stale_predictions`, `get_prediction`) accept `identity:` kwarg to route to the correct store
+
+## [0.1.9] - 2026-05-07
+### Fixed
+- Abductive reasoning decay now handles restored hypotheses with no `last_evaluated_at` timestamp instead of crashing the update cycle.
 
 ## [0.1.8] - 2026-04-22
 ### Added
