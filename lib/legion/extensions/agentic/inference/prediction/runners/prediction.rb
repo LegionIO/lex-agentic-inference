@@ -104,7 +104,10 @@ module Legion
                 result
               end
 
-              private
+              def prediction_store(identity: nil)
+                @prediction_stores ||= {}
+                @prediction_stores[identity] ||= Helpers::PredictionStore.new(identity: identity)
+              end
 
               def estimate_confidence(mode, context)
                 base = case mode
