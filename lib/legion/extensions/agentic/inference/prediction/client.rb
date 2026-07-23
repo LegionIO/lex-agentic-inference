@@ -15,12 +15,6 @@ module Legion
             def initialize(**)
               @prediction_stores = {}
             end
-
-            private
-
-            def prediction_store(identity: nil)
-              @prediction_stores[identity] ||= Helpers::PredictionStore.new(identity: identity)
-            end
           end
         end
       end

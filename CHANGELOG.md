@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.11] - 2026-07-23
+### Fixed
+- Move `prediction_store` accessor into `Runners::Prediction` module so it works when extended onto RunnerHost (fixes NoMethodError during GAIA heartbeat tick)
+- Remove `private` keyword from runner methods — runner modules must be fully accessible when extended
+
 ## [0.1.10] - 2026-07-16
 ### Added
 - Per-identity prediction store and rolling accuracy: `PredictionStore` is now keyed by `identity:`, isolating each partner's predictions and outcomes
