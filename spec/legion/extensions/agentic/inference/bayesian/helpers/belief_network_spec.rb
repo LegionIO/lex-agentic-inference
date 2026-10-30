@@ -111,19 +111,19 @@ RSpec.describe Legion::Extensions::Agentic::Inference::Bayesian::Helpers::Belief
   describe '#information_gain' do
     it 'returns a non-negative float' do
       belief = add
-      gain = network.information_gain(belief_id: belief.id, evidence_id: 'ev-1', likelihood: 0.9)
+      gain = network.information_gain(belief_id: belief.id, likelihood: 0.9)
       expect(gain).to be >= 0.0
     end
 
     it 'returns 0.0 for unknown belief' do
-      gain = network.information_gain(belief_id: 'nonexistent', evidence_id: 'ev-1', likelihood: 0.8)
+      gain = network.information_gain(belief_id: 'nonexistent', likelihood: 0.8)
       expect(gain).to eq(0.0)
     end
 
     it 'does not mutate the belief posterior' do
       belief = add
       before = belief.posterior
-      network.information_gain(belief_id: belief.id, evidence_id: 'ev-1', likelihood: 0.9)
+      network.information_gain(belief_id: belief.id, likelihood: 0.9)
       expect(belief.posterior).to eq(before)
     end
 
@@ -131,8 +131,8 @@ RSpec.describe Legion::Extensions::Agentic::Inference::Bayesian::Helpers::Belief
       b1 = add(content: 'h1')
       b2 = add(content: 'h2')
 
-      gain_strong = network.information_gain(belief_id: b1.id, evidence_id: 'ev', likelihood: 0.95)
-      gain_weak   = network.information_gain(belief_id: b2.id, evidence_id: 'ev', likelihood: 0.55)
+      gain_strong = network.information_gain(belief_id: b1.id, likelihood: 0.95)
+      gain_weak   = network.information_gain(belief_id: b2.id, likelihood: 0.55)
       expect(gain_strong).to be > gain_weak
     end
   end

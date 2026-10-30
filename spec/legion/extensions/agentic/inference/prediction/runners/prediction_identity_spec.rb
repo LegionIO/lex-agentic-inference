@@ -3,7 +3,7 @@
 require 'legion/extensions/agentic/inference/prediction/client'
 
 RSpec.describe Legion::Extensions::Agentic::Inference::Prediction::Runners::Prediction do
-  let(:client) { Legion::Extensions::Agentic::Inference::Prediction::Client.new }
+  let(:client) { Legion::Extensions::Agentic::Inference::Prediction::Client.new(prediction_stores: {}) }
 
   describe 'per-identity isolation' do
     it 'predictions for identity X are not visible to identity Y' do
@@ -39,6 +39,38 @@ RSpec.describe Legion::Extensions::Agentic::Inference::Prediction::Runners::Pred
 
       expect(alice_pending[:count]).to eq(1)
       expect(bob_pending[:count]).to eq(0)
+    end
+  end
+
+  describe 'shared runtime state' do
+    let(:identity) { SecureRandom.uuid }
+    let(:other_identity) { SecureRandom.uuid }
+    let(:producer) { Legion::Extensions::Agentic::Inference::Prediction::Client.new }
+    let(:consumer) { Object.new.extend(described_class) }
+
+    after do
+      producer.erase_partner!(identity: identity)
+      producer.erase_partner!(identity: other_identity)
+    end
+
+    it 'resolves a client prediction through separate runner instances without crossing identities' do
+      prediction = producer.predict(mode: :functional_mapping, confidence: 0.9, identity: identity)
+      other = producer.predict(mode: :functional_mapping, identity: other_identity)
+
+      expect(consumer.pending_predictions(identity: identity)[:predictions].map { |entry| entry[:prediction_id] })
+        .to eq([prediction[:prediction_id]])
+      expect(consumer.resolve_prediction(prediction_id: prediction[:prediction_id], outcome: :incorrect,
+                                         identity: other_identity)).to include(resolved: false, reason: :not_found)
+
+      resolver = Object.new.extend(described_class)
+      resolver.resolve_prediction(prediction_id: prediction[:prediction_id], outcome: :correct, identity: identity)
+
+      expect(producer.prediction_accuracy(identity: identity)).to eq(accuracy: 1.0, total_outcomes: 1)
+      expect(producer.pending_predictions(identity: identity)[:predictions]).to be_empty
+      expect(consumer.get_prediction(prediction_id: other[:prediction_id], identity: other_identity)[:prediction])
+        .to include(status: :pending)
+      consumer.erase_partner!(identity: identity)
+      expect(producer.get_prediction(prediction_id: prediction[:prediction_id], identity: identity)[:found]).to be false
     end
   end
 

@@ -3,7 +3,7 @@
 require 'legion/extensions/agentic/inference/prediction/client'
 
 RSpec.describe Legion::Extensions::Agentic::Inference::Prediction::Runners::Prediction do
-  let(:client) { Legion::Extensions::Agentic::Inference::Prediction::Client.new }
+  let(:client) { Legion::Extensions::Agentic::Inference::Prediction::Client.new(prediction_stores: {}) }
 
   describe '#predict' do
     it 'creates a prediction with valid mode' do
@@ -44,6 +44,22 @@ RSpec.describe Legion::Extensions::Agentic::Inference::Prediction::Runners::Pred
     it 'returns not_found for missing prediction' do
       result = client.resolve_prediction(prediction_id: 'nonexistent', outcome: :correct)
       expect(result[:resolved]).to be false
+    end
+
+    it 'counts a prediction outcome once and preserves the first resolution' do
+      correct = client.predict(mode: :functional_mapping)
+      incorrect = client.predict(mode: :functional_mapping)
+      client.resolve_prediction(prediction_id: correct[:prediction_id], outcome: :correct, actual: 'observed')
+      client.resolve_prediction(prediction_id: incorrect[:prediction_id], outcome: :incorrect)
+
+      repeated = client.resolve_prediction(prediction_id: correct[:prediction_id], outcome: :correct)
+      conflicting = client.resolve_prediction(prediction_id: correct[:prediction_id], outcome: :incorrect)
+
+      expect(repeated).to include(resolved: false, reason: :already_resolved)
+      expect(conflicting).to include(resolved: false, reason: :already_resolved)
+      expect(client.prediction_accuracy).to eq(accuracy: 0.5, total_outcomes: 2)
+      expect(client.get_prediction(prediction_id: correct[:prediction_id])[:prediction])
+        .to include(status: :correct, actual: 'observed')
     end
   end
 
