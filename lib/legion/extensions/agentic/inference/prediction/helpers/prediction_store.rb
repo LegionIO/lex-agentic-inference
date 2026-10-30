@@ -9,12 +9,20 @@ module Legion
         module Prediction
           module Helpers
             class PredictionStore
+              @stores = {} # rubocop:disable ThreadSafety/MutableClassInstanceVariable -- Registry access is protected by @stores_mutex.
+              @stores_mutex = Mutex.new
+
+              def self.for_identity(identity:)
+                @stores_mutex.synchronize { @stores[identity] ||= new(identity: identity) }
+              end
+
               attr_reader :predictions, :outcomes, :identity
 
               def initialize(identity: nil)
                 @identity = identity
                 @predictions = {}
                 @outcomes = []
+                @mutex = Mutex.new
               end
 
               def store(prediction)
@@ -31,16 +39,18 @@ module Legion
               end
 
               def resolve(prediction_id, outcome:, actual: nil)
-                pred = @predictions[prediction_id]
-                return nil unless pred
+                @mutex.synchronize do
+                  pred = @predictions[prediction_id]
+                  return nil unless pred && pred[:status] == :pending
 
-                pred[:status] = outcome # :correct, :incorrect, :partial, :expired
-                pred[:resolved_at] = Time.now.utc
-                pred[:actual] = actual
+                  pred[:status] = outcome # :correct, :incorrect, :partial, :expired
+                  pred[:resolved_at] = Time.now.utc
+                  pred[:actual] = actual
 
-                @outcomes << { prediction_id: prediction_id, outcome: outcome, at: Time.now.utc }
-                @outcomes.shift while @outcomes.size > 500
-                pred
+                  @outcomes << { prediction_id: prediction_id, outcome: outcome, at: pred[:resolved_at] }
+                  @outcomes.shift while @outcomes.size > 500
+                  pred
+                end
               end
 
               def pending

@@ -53,8 +53,9 @@ module Legion
                   record_outcome_trace(pred, outcome)
                   { resolved: true, prediction_id: prediction_id, outcome: outcome }
                 else
-                  log.debug "[prediction] resolve failed: #{prediction_id[0..7]} not found"
-                  { resolved: false, reason: :not_found }
+                  reason = store.get(prediction_id) ? :already_resolved : :not_found
+                  log.debug "[prediction] resolve failed: #{prediction_id[0..7]} #{reason}"
+                  { resolved: false, reason: reason }
                 end
               end
 
@@ -81,8 +82,7 @@ module Legion
                   age = Time.now.utc - pred[:created_at]
                   next unless age > pred[:horizon]
 
-                  store.resolve(pred[:prediction_id], outcome: :expired, actual: nil)
-                  expired_count += 1
+                  expired_count += 1 if store.resolve(pred[:prediction_id], outcome: :expired, actual: nil)
                 end
 
                 remaining = store.pending.size
@@ -105,8 +105,9 @@ module Legion
               end
 
               def prediction_store(identity: nil)
-                @prediction_stores ||= {}
-                @prediction_stores[identity] ||= Helpers::PredictionStore.new(identity: identity)
+                return @prediction_stores[identity] ||= Helpers::PredictionStore.new(identity: identity) if @prediction_stores
+
+                Helpers::PredictionStore.for_identity(identity: identity)
               end
 
               def estimate_confidence(mode, context)

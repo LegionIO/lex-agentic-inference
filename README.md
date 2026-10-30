@@ -5,7 +5,7 @@ Domain consolidation gem for reasoning, inference, and belief management. Bundle
 ## Overview
 
 **Gem**: `lex-agentic-inference`
-**Version**: 0.1.8
+**Version**: 0.2.0
 **Namespace**: `Legion::Extensions::Agentic::Inference`
 
 ## Sub-Modules
@@ -61,6 +61,22 @@ Domain consolidation gem for reasoning, inference, and belief management. Bundle
 ```ruby
 gem 'lex-agentic-inference'
 ```
+
+## Prediction state ownership
+
+Default `Prediction::Client` objects and prediction runners share a process-local
+store for each `identity:`. Use the same verified identity for prediction,
+lookup, resolution, and erasure. Omitting identity selects the shared unscoped
+partition; it is not a substitute for principal attribution.
+
+For an independent standalone client, pass `prediction_stores: {}` to
+`Legion::Extensions::Agentic::Inference::Prediction::Client.new`. That client's
+stores are not visible to default runtime runners.
+
+Only the first resolution of a pending prediction is accepted. Repeated or
+conflicting feedback returns `resolved: false, reason: :already_resolved`;
+unknown IDs in the selected partition return `reason: :not_found`. These
+stores are not durable across process restarts.
 
 ## Development
 

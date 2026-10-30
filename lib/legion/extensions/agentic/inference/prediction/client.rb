@@ -12,8 +12,8 @@ module Legion
           class Client
             include Runners::Prediction
 
-            def initialize(**)
-              @prediction_stores = {}
+            def initialize(prediction_stores: nil, **)
+              @prediction_stores = prediction_stores
             end
           end
         end

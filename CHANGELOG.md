@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0] - 2026-10-29
+### Changed
+- Default prediction clients and runner instances now share process-local state within the same identity partition. Pass `prediction_stores: {}` to a client when independent state ownership is required.
+### Fixed
+- Make prediction resolution single-use so duplicate or conflicting feedback cannot skew accuracy, overwrite accepted outcomes, or emit repeated outcome traces.
+- Keep wrong-identity lookup, resolution, and erasure isolated. This release does not add restart persistence or infer missing caller identity.
+
 ## [0.1.11] - 2026-07-23
 ### Fixed
 - Move `prediction_store` accessor into `Runners::Prediction` module so it works when extended onto RunnerHost (fixes NoMethodError during GAIA heartbeat tick)
