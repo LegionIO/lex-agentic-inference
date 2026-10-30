@@ -77,7 +77,7 @@ module Legion
 
               def information_gain(belief_id:, evidence_id:, likelihood:, **)
                 clamped = likelihood.clamp(Helpers::Constants::LIKELIHOOD_FLOOR, Helpers::Constants::LIKELIHOOD_CEILING)
-                gain    = belief_network.information_gain(belief_id: belief_id, evidence_id: evidence_id, likelihood: clamped)
+                gain    = belief_network.information_gain(belief_id: belief_id, likelihood: clamped)
                 log.debug "[bayesian_belief] information_gain: id=#{belief_id[0..7]} likelihood=#{clamped.round(3)} gain=#{gain.round(4)}"
                 { success: true, belief_id: belief_id, evidence_id: evidence_id, likelihood: clamped, information_gain: gain }
               end

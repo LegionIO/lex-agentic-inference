@@ -46,7 +46,7 @@ module Legion
                 @controllability   = controllability
                 @confidence        = confidence.clamp(CONFIDENCE_FLOOR, CONFIDENCE_CEILING)
                 @emotional_response = ATTRIBUTION_EMOTIONS[pattern]
-                @created_at        = Time.now.utc
+                @created_at = Time.now.utc
               end
 
               def pattern

@@ -64,7 +64,7 @@ module Legion
                 subset.to_h { |b| [b.id, b.posterior / total] }
               end
 
-              def information_gain(belief_id:, evidence_id:, likelihood:) # rubocop:disable Lint/UnusedMethodArgument
+              def information_gain(belief_id:, likelihood:)
                 belief = @beliefs[belief_id]
                 return 0.0 unless belief
 
@@ -134,8 +134,8 @@ module Legion
                 prior_q = 1.0 - prior_p
                 post_q  = 1.0 - post_p
 
-                term1 = post_p  * Math.log2(post_p  / prior_p)
-                term2 = post_q  * Math.log2(post_q  / prior_q)
+                term1 = post_p * Math.log2(post_p / prior_p)
+                term2 = post_q * Math.log2(post_q / prior_q)
                 term1 + term2
               end
             end

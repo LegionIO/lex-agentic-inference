@@ -17,7 +17,7 @@ module Legion
                 @pole_ids    = []
                 @alignment   = 0.0
                 @flux_density = 0.0
-                @created_at  = Time.now.utc
+                @created_at = Time.now.utc
               end
 
               def add_pole(pole_id)
